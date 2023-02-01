@@ -4,6 +4,8 @@ import asteroids.nasa.asteroids.services.AsteroidsService;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import org.springframework.util.LinkedMultiValueMap;
+import org.springframework.util.MultiValueMap;
 import org.springframework.web.reactive.function.client.WebClient;
 
 @Service
@@ -12,7 +14,7 @@ public class AsteroidsServiceImpl implements AsteroidsService {
     private final  WebClient webClient;
 
     @Value("${asteroids.api-key}")
-    private final String apiKey = "AEIpNlPXeGs8Z0DUfmg9XU4eEjwFJ6KLzYwz58QV";
+    private String apiKey ;
 
     public AsteroidsServiceImpl(WebClient webClient) {
         this.webClient = webClient;
@@ -23,13 +25,19 @@ public class AsteroidsServiceImpl implements AsteroidsService {
         return webClient.get()
                 .uri(uriBuilder -> uriBuilder
                         .path("neo/rest/v1/feed")
-                        .queryParam("start_date", startDate)
-                        .queryParam("end_date", endDate)
-                        .queryParam("api_key", apiKey)
+                        .queryParams(getHeaders(startDate,endDate))
                         .build())
                 .exchange()
                 .block()
                 .bodyToMono(String.class)
                 .block();
+    }
+    private MultiValueMap<String, String> getHeaders(String startDate, String endDate){
+        MultiValueMap<String, String> map = new LinkedMultiValueMap<>();
+        map.add("start_date", startDate);
+        map.add("end_date", endDate);
+        map.add("api_key", apiKey);
+
+        return map;
     }
 }
