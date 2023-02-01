@@ -53,7 +53,7 @@ cmake-build-*/
 out/
 
 .DS_Store
-gradle/**
-gradle/
+.gradle/
+gradle
 .idea/**
 .idea/
